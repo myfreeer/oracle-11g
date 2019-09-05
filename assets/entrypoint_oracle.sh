@@ -46,14 +46,15 @@ create_db() {
 	monitor $listener_log listener &
 	#lsnrctl start | while read line; do echo -e "lsnrctl: $line"; done
 	#MON_LSNR_PID=$!
-        echo "START DBCA"
+    echo "START DBCA"
 	dbca -silent -createDatabase -responseFile /assets/dbca.rsp
 	echo_green "Database created."
 	date "+%F %T"
 	change_dpdump_dir
-        touch $pfile
+	set_db_config
+    touch $pfile
 	trap_db
-        kill $MON_ALERT_PID
+    kill $MON_ALERT_PID
 	#wait $MON_ALERT_PID
 }
 
@@ -81,6 +82,24 @@ change_dpdump_dir () {
 	echo_green "Changind dpdump dir to /opt/oracle/dpdump"
 	sqlplus / as sysdba <<-EOF |
 		create or replace directory data_pump_dir as '/opt/oracle/dpdump';
+		commit;
+		exit 0
+	EOF
+	while read line; do echo -e "sqlplus: $line"; done
+}
+
+
+set_db_config () {
+	echo_green "Standardize the creation of the database."
+	sqlplus / as sysdba <<-EOF |
+		alter system set db_recovery_file_dest='' scope=spfile;
+		alter system reset db_recovery_file_dest_size scope=spfile;
+		alter system set audit_trail=none scope=spfile;
+		alter system set audit_sys_operations=false scope=spfile;
+		alter system set filesystemio_options=directio scope=spfile;
+		alter system set STANDBY_FILE_MANAGEMENT=AUTO;
+		EXEC DBMS_STATS.SET_GLOBAL_PREFS('CONCURRENT','FALSE');
+		alter profile default limit PASSWORD_LIFE_TIME unlimited;
 		commit;
 		exit 0
 	EOF

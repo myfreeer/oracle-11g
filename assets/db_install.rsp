@@ -83,7 +83,7 @@ INVENTORY_LOCATION=/opt/oracle/oraInventory
 # Specify value as the following to select all the languages.
 # Example : SELECTED_LANGUAGES=all_langs  
 #------------------------------------------------------------------------------
-SELECTED_LANGUAGES=en,fr
+SELECTED_LANGUAGES=en,zh_CN
 
 #------------------------------------------------------------------------------
 # Specify the complete path of the Oracle Home.
@@ -133,7 +133,7 @@ oracle.install.db.EEOptionsSelection=false
 #              oracle.rdbms.partitioning:11.2.0.4.0 - Oracle Partitioning
 #              oracle.rdbms.rat:11.2.0.4.0 - Oracle Real Application Testing
 #------------------------------------------------------------------------------
-oracle.install.db.optionalComponents=oracle.rdbms.partitioning:11.2.0.4.0,oracle.oraolap:11.2.0.4.0,oracle.rdbms.dm:11.2.0.4.0,oracle.rdbms.dv:11.2.0.4.0,oracle.rdbms.lbac:11.2.0.4.0,oracle.rdbms.rat:11.2.0.4.0
+oracle.install.db.optionalComponents=
 
 ###############################################################################
 #                                                                             #
@@ -226,7 +226,7 @@ oracle.install.db.config.starterdb.memoryOption=true
 # on the system.
 # Example: oracle.install.db.config.starterdb.memoryLimit=512
 #------------------------------------------------------------------------------
-oracle.install.db.config.starterdb.memoryLimit=
+oracle.install.db.config.starterdb.memoryLimit=400
 
 #------------------------------------------------------------------------------
 # This variable controls whether to load Example Schemas onto
@@ -385,7 +385,7 @@ MYORACLESUPPORT_PASSWORD=
 #
 # Example    : SECURITY_UPDATES_VIA_MYORACLESUPPORT=true
 #------------------------------------------------------------------------------
-SECURITY_UPDATES_VIA_MYORACLESUPPORT=
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
 
 #------------------------------------------------------------------------------
 # Specify whether user doesn't want to configure Security Updates.
@@ -449,7 +449,7 @@ COLLECTOR_SUPPORTHUB_URL=
 #   - OFFLINE_UPDATES
 #   - SKIP_UPDATES
 #------------------------------------------------------------------------------
-oracle.installer.autoupdates.option=
+oracle.installer.autoupdates.option=SKIP_UPDATES
 #------------------------------------------------------------------------------
 # In case MYORACLESUPPORT_DOWNLOAD option is chosen, specify the location where
 # the updates are to be downloaded.
