@@ -20,6 +20,7 @@ docker commit oracle11g oracle-db:11.2.0.4
 docker rm oracle11g
 # Configure and start db in non-privileged mode
 # and manally stop it after fully configured
+# docker run -it --name oracle11g -p 1521:1521 -p 1522:22 -v /root/db-dir:/opt/oracle/app/oradata oracle-db:11.2.0.4
 docker run -it --name oracle11g -p 1521:1521 -p 1522:22 oracle-db:11.2.0.4
 # Make a normal start
 docker start oracle11g
@@ -41,7 +42,7 @@ DB users:
 
 Optionally you can map dpdump folder to easy upload dumps:
 ```sh
-docker run -it --privileged --name oracle11g -p 1521:1521 -p 1522:22 -v <local_dpdump>:/opt/oracle/dpdump oracle-db:11.2.0.4
+docker run -it --privileged --name oracle11g -p 1521:1521 -p 1522:22 -v <local_dpdump>:/opt/oracle/app/oradata/dpdump oracle-db:11.2.0.4
 ```
 To execute impdp/expdp just use docker exec command:
 ```sh

@@ -4,13 +4,13 @@ set -e
 source /assets/colorecho
 source ~/.bashrc
 
-alert_log="$ORACLE_BASE/diag/rdbms/orcl/$ORACLE_SID/trace/alert_$ORACLE_SID.log"
+alert_log="$ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace/alert_$ORACLE_SID.log"
 listener_log="$ORACLE_BASE/diag/tnslsnr/$HOSTNAME/listener/trace/listener.log"
 pfile=$ORACLE_HOME/dbs/init$ORACLE_SID.ora
 
 # monitor $logfile
 monitor() {
-    tail -F -n 0 $1 | while read line; do echo -e "$2: $line"; done
+    tail --pid $$ -F -n 0 $1 | while read line; do echo -e "$2: $line"; done
 }
 
 
@@ -45,9 +45,11 @@ create_db() {
 	MON_ALERT_PID=$!
 	monitor $listener_log listener &
 	#lsnrctl start | while read line; do echo -e "lsnrctl: $line"; done
-	#MON_LSNR_PID=$!
+	MON_LSNR_PID=$!
     echo "START DBCA"
-	dbca -silent -createDatabase -responseFile /assets/dbca.rsp
+	dbca -silent -createDatabase -responseFile /assets/dbca.rsp ||
+		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID.log
 	echo_green "Database created."
 	date "+%F %T"
 	change_dpdump_dir
@@ -55,6 +57,7 @@ create_db() {
     touch $pfile
 	trap_db
     kill $MON_ALERT_PID
+    kill $MON_LSNR_PID
 	#wait $MON_ALERT_PID
 }
 
@@ -79,9 +82,9 @@ shu_immediate() {
 }
 
 change_dpdump_dir () {
-	echo_green "Changind dpdump dir to /opt/oracle/dpdump"
+	echo_green "Changind dpdump dir to $ORACLE_BASE/oradata/dpdump"
 	sqlplus / as sysdba <<-EOF |
-		create or replace directory data_pump_dir as '/opt/oracle/dpdump';
+		create or replace directory data_pump_dir as '$ORACLE_BASE/oradata/dpdump';
 		commit;
 		exit 0
 	EOF
@@ -92,12 +95,6 @@ change_dpdump_dir () {
 set_db_config () {
 	echo_green "Standardize the creation of the database."
 	sqlplus / as sysdba <<-EOF |
-		alter system set db_recovery_file_dest='' scope=spfile;
-		alter system reset db_recovery_file_dest_size scope=spfile;
-		alter system set audit_trail=none scope=spfile;
-		alter system set audit_sys_operations=false scope=spfile;
-		alter system set filesystemio_options=directio scope=spfile;
-		alter system set STANDBY_FILE_MANAGEMENT=AUTO;
 		EXEC DBMS_STATS.SET_GLOBAL_PREFS('CONCURRENT','FALSE');
 		alter profile default limit PASSWORD_LIFE_TIME unlimited;
 		commit;
@@ -106,11 +103,59 @@ set_db_config () {
 	while read line; do echo -e "sqlplus: $line"; done
 }
 
-chmod 777 /opt/oracle/dpdump
+link_db_files () {
+	echo_green "Creating link of the database files."
+	if [ ! -L $ORACLE_BASE/product/11.2.0/dbhome_1/dbs ]; then
+		if [ ! -d $ORACLE_BASE/product/11.2.0/dbhome_1 ]; then
+			mkdir -p $ORACLE_BASE/product/11.2.0/dbhome_1
+		fi
+		if [ ! -d $ORACLE_BASE/oradata/dbs ]; then
+			mkdir -p $ORACLE_BASE/oradata/dbs
+		fi
+		if [ -d $ORACLE_BASE/product/11.2.0/dbhome_1/dbs ]; then
+			mv -f $ORACLE_BASE/product/11.2.0/dbhome_1/dbs/* $ORACLE_BASE/oradata/dbs
+			rmdir $ORACLE_BASE/product/11.2.0/dbhome_1/dbs
+		fi
+		ln -fsT $ORACLE_BASE/oradata/dbs $ORACLE_BASE/product/11.2.0/dbhome_1/dbs
+	fi
+	
+	if [ ! -L $ORACLE_BASE/admin/$ORACLE_SID/pfile ]; then
+		if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID ]; then
+			mkdir -p $ORACLE_BASE/admin/$ORACLE_SID
+		fi
+		if [ ! -d $ORACLE_BASE/oradata/pfile ]; then
+			mkdir -p $ORACLE_BASE/oradata/pfile
+		fi
+		if [ -d $ORACLE_BASE/admin/$ORACLE_SID/pfile ]; then
+			mv -f $ORACLE_BASE/admin/$ORACLE_SID/pfile/* $ORACLE_BASE/oradata/pfile/
+			rmdir $ORACLE_BASE/admin/$ORACLE_SID/pfile
+		fi
+		ln -fsT $ORACLE_BASE/oradata/pfile $ORACLE_BASE/admin/$ORACLE_SID/pfile
+	fi
+	if [ ! -d $ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace ]; then
+		mkdir -p $ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace
+	fi
+	if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
+		mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
+	fi
+	if [ ! -d $ORACLE_BASE/diag/tnslsnr/$HOSTNAME/listener/trace ]; then
+		mkdir -p $ORACLE_BASE/diag/tnslsnr/$HOSTNAME/listener/trace
+	fi
+	if [ ! -f $alert_log ]; then
+		touch $alert_log
+	fi
+	if [ ! -f $listener_log ]; then
+		touch $listener_log
+	fi
+}
 
 echo "Checking shared memory..."
 df -h | grep "Mounted on" && df -h | egrep --color "^.*/dev/shm" || echo "Shared memory is not mounted."
+link_db_files
 if [ ! -f $pfile ]; then
+  mkdir -p $ORACLE_BASE/oradata/flash_recovery_area
+  mkdir -p $ORACLE_BASE/oradata/dpdump
   create_db;
-fi 
+fi
+chmod 777 $ORACLE_BASE/oradata/dpdump
 start_db

@@ -1,5 +1,4 @@
 FROM centos:7
-MAINTAINER jaspeen
 
 ADD assets /assets
 

@@ -474,7 +474,7 @@ DATAFILEDESTINATION=/opt/oracle/app/oradata
 # Default value : $ORACLE_BASE/flash_recovery_area
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-RECOVERYAREADESTINATION=/opt/oracle/app/oradata
+RECOVERYAREADESTINATION=/opt/oracle/app/oradata/flash_recovery_area
 
 #-----------------------------------------------------------------------------
 # Name          : STORAGETYPE
@@ -608,7 +608,7 @@ CHARACTERSET="AL32UTF8"
 # Default value : None
 # Mandatory     : NO
 #-----------------------------------------------------------------------------
-INITPARAMS="memory_target=0,sga_target=280,pga_aggregate_target=40,java_jit_enabled=false"
+INITPARAMS="memory_target=0,sga_target=280,pga_aggregate_target=40,db_recovery_file_dest=/opt/oracle/app/oradata/fast_recovery_area,audit_trail=none,audit_sys_operations=false,filesystemio_options=directio,standby_file_management=auto,java_jit_enabled=false"
 
 #-----------------------------------------------------------------------------
 # Name          : SAMPLESCHEMA
@@ -657,7 +657,7 @@ INITPARAMS="memory_target=0,sga_target=280,pga_aggregate_target=40,java_jit_enab
 # Default value :
 # Mandatory     : NO
 #-----------------------------------------------------------------------------
-TOTALMEMORY = "250"
+TOTALMEMORY = "350"
 
 
 #-----------------------*** End of CREATEDATABASE section ***------------------------

@@ -218,7 +218,7 @@ oracle.install.db.config.starterdb.characterSet=AL32UTF8
 # If Automatic Memory Management is not desired, and memory allocation
 # is to be done manually, then set it to false.
 #------------------------------------------------------------------------------
-oracle.install.db.config.starterdb.memoryOption=true
+oracle.install.db.config.starterdb.memoryOption=false
 
 #------------------------------------------------------------------------------
 # Specify the total memory allocation for the database. Value(in MB) should be
@@ -226,7 +226,7 @@ oracle.install.db.config.starterdb.memoryOption=true
 # on the system.
 # Example: oracle.install.db.config.starterdb.memoryLimit=512
 #------------------------------------------------------------------------------
-oracle.install.db.config.starterdb.memoryLimit=400
+oracle.install.db.config.starterdb.memoryLimit=350
 
 #------------------------------------------------------------------------------
 # This variable controls whether to load Example Schemas onto
