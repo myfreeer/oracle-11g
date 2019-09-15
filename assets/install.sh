@@ -11,7 +11,9 @@ if [ ! -d "/install/database" ]; then
 fi
 
 echo_yellow "Installing Oracle Database 11g"
-
-exec su oracle -c "/install/database/runInstaller -silent -ignorePrereq -waitforcompletion -responseFile /assets/db_install.rsp"
+su oracle -c "/install/database/runInstaller -silent -force -ignoresysprereqs -ignorePrereq -waitforcompletion -responseFile /assets/db_install.rsp"
 /opt/oracle/oraInventory/orainstRoot.sh
 /opt/oracle/app/product/11.2.0/dbhome_1/root.sh
+
+# cleanup everything
+su oracle -c "/assets/cleanup.sh"

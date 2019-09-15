@@ -46,7 +46,7 @@ create_db() {
 	monitor $listener_log listener &
 	#lsnrctl start | while read line; do echo -e "lsnrctl: $line"; done
 	MON_LSNR_PID=$!
-    echo "START DBCA"
+	echo "START DBCA"
 	dbca -silent -createDatabase -responseFile /assets/dbca.rsp ||
 		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
 		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID.log
@@ -54,15 +54,15 @@ create_db() {
 	date "+%F %T"
 	change_dpdump_dir
 	set_db_config
-    touch $pfile
+	touch $pfile
 	trap_db
-    kill $MON_ALERT_PID
-    kill $MON_LSNR_PID
+	kill $MON_ALERT_PID
+	kill $MON_LSNR_PID
 	#wait $MON_ALERT_PID
 }
 
 stop() {
-    trap '' SIGINT SIGTERM
+	trap '' SIGINT SIGTERM
 	shu_immediate
 	echo_yellow "Shutting down listener..."
 	lsnrctl stop | while read line; do echo -e "lsnrctl: $line"; done
@@ -118,7 +118,7 @@ link_db_files () {
 		fi
 		ln -fsT $ORACLE_BASE/oradata/dbs $ORACLE_BASE/product/11.2.0/dbhome_1/dbs
 	fi
-	
+
 	if [ ! -L $ORACLE_BASE/admin/$ORACLE_SID/pfile ]; then
 		if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID ]; then
 			mkdir -p $ORACLE_BASE/admin/$ORACLE_SID
@@ -132,6 +132,7 @@ link_db_files () {
 		fi
 		ln -fsT $ORACLE_BASE/oradata/pfile $ORACLE_BASE/admin/$ORACLE_SID/pfile
 	fi
+
 	if [ ! -d $ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace ]; then
 		mkdir -p $ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace
 	fi
@@ -153,9 +154,9 @@ echo "Checking shared memory..."
 df -h | grep "Mounted on" && df -h | egrep --color "^.*/dev/shm" || echo "Shared memory is not mounted."
 link_db_files
 if [ ! -f $pfile ]; then
-  mkdir -p $ORACLE_BASE/oradata/flash_recovery_area
-  mkdir -p $ORACLE_BASE/oradata/dpdump
-  create_db;
+	mkdir -p $ORACLE_BASE/oradata/flash_recovery_area
+	mkdir -p $ORACLE_BASE/oradata/dpdump
+	create_db;
 fi
 chmod 777 $ORACLE_BASE/oradata/dpdump
 start_db

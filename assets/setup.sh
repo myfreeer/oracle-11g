@@ -7,6 +7,7 @@ trap "echo_red '******* Caught SIGINT signal. Stopping...'; exit 2" SIGINT
 #Install prerequisites directly without virtual package
 deps () {
 	echo "Installing dependencies"
+	# openssh-server for sshd
 	yum install -y openssl make gcc binutils gcc-c++ compat-libstdc++ \
 		elfutils-libelf-devel elfutils-libelf-devel-static ksh \
 		libaio libaio-devel numactl-devel sysstat unixODBC unixODBC-devel \
