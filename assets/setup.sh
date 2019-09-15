@@ -8,10 +8,11 @@ trap "echo_red '******* Caught SIGINT signal. Stopping...'; exit 2" SIGINT
 deps () {
 	echo "Installing dependencies"
 	# openssh-server for sshd
+	# psmsic for OPatch
 	yum install -y openssl make gcc binutils gcc-c++ compat-libstdc++ \
 		elfutils-libelf-devel elfutils-libelf-devel-static ksh \
 		libaio libaio-devel numactl-devel sysstat unixODBC unixODBC-devel \
-		pcre-devel glibc.i686 unzip sudo passwd openssh-server
+		pcre-devel glibc.i686 unzip sudo passwd openssh-server psmisc
 	yum clean all
 	rm -rf /var/lib/{cache,log} /var/log/lastlog
 }

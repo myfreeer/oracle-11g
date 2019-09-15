@@ -27,6 +27,32 @@ unzip p13390677_112040_Linux-x86-64_2of7.zip
 popd
 ```
 
+### (Optional) Prepare db patch files
+Warning: currently running dbca with patch `29497421` and `29610422` in container
+is extremely slow with amounts of warnings and errors.
+Use it on your own risk or just skip that.
+
+```sh
+pushd $INSTALL_DIR
+
+# OPatch 11.2.0.3.20 or later
+unzip p6880880_112000_Linux-x86-64.zip
+
+mkdir db_patch
+cd db_patch
+# DATABASE PATCH SET UPDATE 11.2.0.4.190716
+unzip ../p29497421_112040_Linux-x86-64.zip 
+cd ..
+
+mkdir ojvm_patch
+cd ojvm_patch
+# OJVM PATCH SET UPDATE 11.2.0.4.190716
+unzip ../p29610422_112040_Linux-x86-64.zip 
+cd ..
+
+popd
+```
+
 ## Build the image
 Run container and it will install oracle and create database:
 

@@ -15,5 +15,20 @@ su oracle -c "/install/database/runInstaller -silent -force -ignoresysprereqs -i
 /opt/oracle/oraInventory/orainstRoot.sh
 /opt/oracle/app/product/11.2.0/dbhome_1/root.sh
 
+# apply patch if available
+if [ -d /install/OPatch ]; then
+	chown -R oracle:oinstall /install/OPatch
+
+	if [ -d /install/db_patch ]; then
+		chown -R oracle:oinstall /install/db_patch
+	fi
+
+	if [ -d /install/ojvm_patch ]; then
+		chown -R oracle:oinstall /install/ojvm_patch
+	fi
+
+	su oracle -c "/assets/patch.sh"
+fi
+
 # cleanup everything
 su oracle -c "/assets/cleanup.sh"
