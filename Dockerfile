@@ -7,6 +7,8 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64
 
 RUN chmod -R 755 /assets && /assets/setup.sh
 
+VOLUME ["/opt/oracle/app/oradata"]
+
 EXPOSE 1521 8080 22
 
 ENTRYPOINT ["/assets/tini", "--"]
