@@ -2,12 +2,9 @@ FROM centos:7
 
 ADD assets /assets
 
-ENV TINI_VERSION=v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64 /assets/tini
-
-ENV GOSU_VERSION=1.11
-ADD https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64 /assets/gosu
-
+# build-time args
+ARG TINI_VERSION=v0.18.0
+ARG GOSU_VERSION=1.11
 ARG SYS_ROOT_PWD=123456
 ARG SYS_ORACLE_PWD=123456
 RUN chmod -R 755 /assets && /assets/setup.sh

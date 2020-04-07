@@ -6,26 +6,32 @@ trap "echo_red '******* Caught SIGINT signal. Stopping...'; exit 2" SIGINT
 
 #Install prerequisites directly without virtual package
 deps () {
-	echo "Installing dependencies"
+	echo_green "Installing dependencies"
 	# openssh-server for sshd
 	# psmsic for OPatch
 	yum install -y openssl make gcc binutils gcc-c++ compat-libstdc++ \
 		elfutils-libelf-devel elfutils-libelf-devel-static ksh \
 		libaio libaio-devel numactl-devel sysstat unixODBC unixODBC-devel \
 		pcre-devel glibc.i686 unzip sudo passwd openssh-server psmisc
+	curl --progress-bar --output /assets/tini \
+		"https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64"
+	curl --progress-bar --output /assets/gosu \
+		"https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
+	chmod 755 /assets/tini /assets/gosu
 	yum clean all
 	rm -rf /var/lib/{cache,log} /var/log/lastlog
 }
 
 users () {
 
-	echo "Configuring users"
+	echo_green "Configuring users"
 	groupadd -g 200 oinstall
 	groupadd -g 201 dba
 	useradd -u 440 -g oinstall -G dba -d /opt/oracle oracle
 	echo "oracle:${SYS_ORACLE_PWD:-123456}" | chpasswd
 	echo "root:${SYS_ROOT_PWD:-123456}" | chpasswd
-	sed -i "s/pam_namespace.so/pam_namespace.so\nsession    required     pam_limits.so/g" /etc/pam.d/login
+	sed -i "s/pam_namespace.so/pam_namespace.so\nsession    required     pam_limits.so/g" \
+		/etc/pam.d/login
 	mkdir -p -m 755 /opt/oracle/app
 	mkdir -p -m 755 /opt/oracle/oraInventory
 	chown -R oracle:oinstall /opt/oracle
@@ -55,7 +61,7 @@ mk_user_script_dir () {
 		/opt/oracle/user_scripts/4-after-db-create \
 		/opt/oracle/user_scripts/5-before-db-startup \
 		/opt/oracle/user_scripts/6-after-db-startup
-	
+
 	chown -R oracle:oinstall /opt/oracle/user_scripts
 
 }
