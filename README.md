@@ -128,3 +128,49 @@ To execute impdp/expdp just use docker exec command:
 ```sh
 docker exec -it oracle11g impdp ..
 ```
+
+### User scripts
+A user script is either a shell script (`*.sh`)
+or a sql plus script (`*.sql`) provided by user
+mounted into some certain folder of the container,
+which should be executed in the container by:
+* shell script
+    * `root` user
+    * `oracle` user
+* sql plus script
+   * `sys` as sysdba
+
+A user script should be executed at:
+* once before database installation
+    * path: `/opt/oracle/user_scripts/1-before-db-install`
+    * target: shell script
+    * user: `root`
+* once after database installation
+    * path: `/opt/oracle/user_scripts/2-after-db-install`
+    * target: shell script
+    * user: `root`
+* once before database creation
+    * path: `/opt/oracle/user_scripts/3-before-db-create`
+    * target: shell script and sql script
+    * user: `oracle` for shell script and `sys` for sql script
+* once after database creation before database startup
+    * path: `/opt/oracle/user_scripts/4-after-db-create`
+    * target: shell script and sql script
+    * user: `oracle` for shell script and `sys` for sql script
+* every time container starts up before database startup
+    * path: `/opt/oracle/user_scripts/5-before-db-startup`
+    * target: shell script and sql script
+    * user: `oracle` for shell script and `sys` for sql script
+* every time container starts up after database startup as `oracle`
+    * path: `/opt/oracle/user_scripts/6-after-db-startup`
+    * target: shell script and sql script
+    * user: `oracle` for shell script and `sys` for sql script
+
+A user script that should be executed once should be renamed
+to mark being executed to avoid multiple execution after executed.
+
+Execution output (stdout and stderr) of a user script 
+should be collected to the folder of the user script 
+with the filename of the user script, 
+plus script execution timestamp in format of
+`date +%Y-%m-%d_%H-%M-%S_%N`.

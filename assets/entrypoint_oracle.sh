@@ -35,6 +35,9 @@ start_db() {
 		exit 0
 	EOF
 	while read line; do echo -e "sqlplus: $line"; done
+	# user script
+	/assets/run_user_scripts.sh /opt/oracle/user_scripts/6-after-db-startup
+	# end user script
 	wait $MON_ALERT_PID
 }
 
@@ -154,9 +157,18 @@ echo "Checking shared memory..."
 df -h | grep "Mounted on" && df -h | egrep --color "^.*/dev/shm" || echo "Shared memory is not mounted."
 link_db_files
 if [ ! -f $pfile ]; then
+	# user script
+	/assets/run_user_scripts.sh /opt/oracle/user_scripts/3-before-db-create ONCE
+	# end user script
 	mkdir -p $ORACLE_BASE/oradata/flash_recovery_area
 	mkdir -p $ORACLE_BASE/oradata/dpdump
 	create_db;
+	# user script
+	/assets/run_user_scripts.sh /opt/oracle/user_scripts/4-after-db-create ONCE
+	# end user script
 fi
 chmod 777 $ORACLE_BASE/oradata/dpdump
+# user script
+/assets/run_user_scripts.sh /opt/oracle/user_scripts/5-before-db-startup
+# end user script
 start_db

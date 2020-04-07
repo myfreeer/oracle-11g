@@ -45,6 +45,21 @@ sysctl_and_limits () {
 
 }
 
+mk_user_script_dir () {
+
+	mkdir -p -m 755 /opt/oracle/user_scripts
+	mkdir -p -m 755 /opt/oracle/user_scripts/1-before-db-install \
+		/opt/oracle/user_scripts/2-after-db-install \
+		/opt/oracle/user_scripts/3-before-db-create \
+		/opt/oracle/user_scripts/4-after-db-create \
+		/opt/oracle/user_scripts/5-before-db-startup \
+		/opt/oracle/user_scripts/6-after-db-startup
+	
+	chown -R oracle:oinstall /opt/oracle/user_scripts
+
+}
+
 deps
 users
 sysctl_and_limits
+mk_user_script_dir
