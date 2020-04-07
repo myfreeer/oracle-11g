@@ -22,5 +22,14 @@ if [ ! -d "/opt/oracle/app/product/11.2.0/dbhome_1" ]; then
 	exit 0
 fi
 
+if [ ! -z "${DB_SID}" ]; then
+	sed -i "/ORACLE_SID/c\\export ORACLE_SID=${DB_SID}\\" ~oracle/.bashrc
+	sed -i "/SID = /c\\SID = \"${DB_SID}\"\\" /assets/dbca.rsp
+fi
+
+if [ -d opt/oracle/app/oradata ]; then
+    chown oracle:oinstall /opt/oracle/app/oradata
+fi
+
 # entrypoint_oracle would handle singals
 exec /assets/gosu oracle "/assets/entrypoint_oracle.sh"

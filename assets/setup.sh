@@ -23,13 +23,14 @@ users () {
 	groupadd -g 200 oinstall
 	groupadd -g 201 dba
 	useradd -u 440 -g oinstall -G dba -d /opt/oracle oracle
-	echo "oracle:123456" | chpasswd
-	echo "root:123456" | chpasswd
+	echo "oracle:${SYS_ORACLE_PWD:-123456}" | chpasswd
+	echo "root:${SYS_ROOT_PWD:-123456}" | chpasswd
 	sed -i "s/pam_namespace.so/pam_namespace.so\nsession    required     pam_limits.so/g" /etc/pam.d/login
 	mkdir -p -m 755 /opt/oracle/app
 	mkdir -p -m 755 /opt/oracle/oraInventory
 	chown -R oracle:oinstall /opt/oracle
-	cat /assets/profile >> ~oracle/.bash_profile
+	chown -R oracle:oinstall /assets
+	echo 'source "~oracle/.bashrc"' ~oracle/.bash_profile
 	cat /assets/profile >> ~oracle/.bashrc
 	ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N ''
 	ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ''

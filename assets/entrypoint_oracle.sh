@@ -49,9 +49,34 @@ start_db() {
 	wait $MON_ALERT_PID
 }
 
+create_db_apply_env() {
+
+	if [ ! -z "${DB_SYSPASSWORD}" ]; then
+		sed -i "/SYSPASSWORD = /c\\SYSPASSWORD = \"${DB_SYSPASSWORD}\"\\" /assets/dbca.rsp
+	fi
+
+	if [ ! -z "${DB_SYSTEMPASSWORD}" ]; then
+		sed -i "/SYSTEMPASSWORD = /c\\SYSTEMPASSWORD = \"${DB_SYSTEMPASSWORD}\"\\" /assets/dbca.rsp
+	fi
+
+	if [ ! -z "${DB_CHARACTERSET}" ]; then
+		sed -i "/CHARACTERSET=/c\\CHARACTERSET=\"${DB_CHARACTERSET}\"\\" /assets/dbca.rsp
+	fi
+
+	if [ ! -z "${DB_TOTALMEMORY}" ]; then
+		sed -i "/TOTALMEMORY=/c\\TOTALMEMORY=\"${DB_TOTALMEMORY}\"\\" /assets/dbca.rsp
+	fi
+
+	if [ ! -z "${DB_INITPARAMS}" ]; then
+		sed -i "/INITPARAMS=/c\\INITPARAMS=\"${DB_INITPARAMS}\"\\" /assets/dbca.rsp
+	fi
+
+}
+
 create_db() {
 	echo_yellow "Database does not exist. Creating database..."
 	date "+%F %T"
+	create_db_apply_env
 	monitor $alert_log alertlog
 	MON_ALERT_PID=$monitor_pid
 	monitor $listener_log listener

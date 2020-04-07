@@ -10,6 +10,16 @@ if [ ! -d "/install/database" ]; then
 	exit 1
 fi
 
+if [ ! -e "$SELECTED_LANGUAGES" ]; then
+	sed -i -e "s/SELECTED_LANGUAGES=en,zh_CN/SELECTED_LANGUAGES=${SELECTED_LANGUAGES}/g" \
+		/assets/db_install.rsp
+fi
+
+if [ ! -e "$ORACLE_EDITION" ]; then
+	sed -i -e "s/oracle.install.db.InstallEdition=EE/oracle.install.db.InstallEdition=${ORACLE_EDITION}/g" \
+		/assets/db_install.rsp
+fi
+
 echo_yellow "Installing Oracle Database 11g"
 su oracle -c "/install/database/runInstaller -silent -force -ignoresysprereqs -ignorePrereq -waitforcompletion -responseFile /assets/db_install.rsp"
 /opt/oracle/oraInventory/orainstRoot.sh
