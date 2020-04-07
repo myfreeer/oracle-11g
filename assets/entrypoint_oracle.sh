@@ -13,10 +13,12 @@ source ~/.bashrc
 alert_log="$ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace/alert_$ORACLE_SID.log"
 listener_log="$ORACLE_BASE/diag/tnslsnr/$HOSTNAME/listener/trace/listener.log"
 pfile=$ORACLE_HOME/dbs/init$ORACLE_SID.ora
+monitor_pid=""
 
 # monitor $logfile
 monitor() {
-    tail --pid $$ -F -n 0 $1 | while read line; do echo -e "$2: $line"; done
+	tail --pid $$ -F -n 0 $1 | while read line; do echo -e "$2: $line"; done &
+	monitor_pid=$(jobs -p)
 }
 
 
@@ -27,13 +29,13 @@ trap_db() {
 
 start_db() {
 	echo_yellow "Starting listener..."
-	monitor $listener_log listener &
+	monitor $listener_log listener
+	MON_LSNR_PID=$monitor_pid
 	lsnrctl start | while read line; do echo -e "lsnrctl: $line"; done
-	MON_LSNR_PID=$!
 	echo_yellow "Starting database..."
 	trap_db
-	monitor $alert_log alertlog &
-	MON_ALERT_PID=$!
+	monitor $alert_log alertlog
+	MON_ALERT_PID=$monitor_pid
 	sqlplus / as sysdba <<-EOF |
 		pro Starting with pfile='$pfile' ...
 		startup;
@@ -50,12 +52,11 @@ start_db() {
 create_db() {
 	echo_yellow "Database does not exist. Creating database..."
 	date "+%F %T"
-	monitor $alert_log alertlog &
-	MON_ALERT_PID=$!
-	monitor $listener_log listener &
-	#lsnrctl start | while read line; do echo -e "lsnrctl: $line"; done
-	MON_LSNR_PID=$!
-	echo "START DBCA"
+	monitor $alert_log alertlog
+	MON_ALERT_PID=$monitor_pid
+	monitor $listener_log listener
+	MON_LSNR_PID=$monitor_pid
+	echo_green "START DBCA"
 	dbca -silent -createDatabase -responseFile /assets/dbca.rsp ||
 		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
 		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID.log
@@ -65,8 +66,7 @@ create_db() {
 	set_db_config
 	touch $pfile
 	trap_db
-	kill $MON_ALERT_PID
-	kill $MON_LSNR_PID
+	kill $MON_ALERT_PID $MON_LSNR_PID
 	#wait $MON_ALERT_PID
 }
 
@@ -178,3 +178,4 @@ chmod 777 $ORACLE_BASE/oradata/dpdump
 /assets/run_user_scripts.sh /opt/oracle/user_scripts/5-before-db-startup
 # end user script
 start_db
+
