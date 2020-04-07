@@ -28,7 +28,11 @@ if [ ! -z "${DB_SID}" ]; then
 fi
 
 if [ -d opt/oracle/app/oradata ]; then
-    chown oracle:oinstall /opt/oracle/app/oradata
+	chown -R oracle:oinstall /opt/oracle/app/oradata
+fi
+
+if [ -d /opt/oracle/user_scripts ]; then
+	chown -R oracle:oinstall /opt/oracle/user_scripts
 fi
 
 # entrypoint_oracle would handle singals
