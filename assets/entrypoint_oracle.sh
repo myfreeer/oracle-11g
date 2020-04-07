@@ -46,6 +46,7 @@ start_db() {
 	# user script
 	/assets/run_user_scripts.sh /opt/oracle/user_scripts/6-after-db-startup
 	# end user script
+	echo_green "Database started."
 	wait $MON_ALERT_PID
 }
 
