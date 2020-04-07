@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# fix env
+export HOME=/opt/oracle
+export USER=oracle
+export LOGNAME=$USER
+export USERNAME=$USER
+
 set -e
 source /assets/colorecho
 source ~/.bashrc

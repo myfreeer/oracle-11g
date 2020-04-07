@@ -16,4 +16,8 @@ EXPOSE 1521 22
 
 ENTRYPOINT ["/assets/tini", "--"]
 
+
+HEALTHCHECK --interval=1m --start-period=5m \
+   CMD ["/assets/gosu", "oracle", "/assets/health_check.sh"]
+
 CMD ["/assets/entrypoint.sh"]
