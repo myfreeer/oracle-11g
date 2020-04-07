@@ -63,7 +63,7 @@ export INSTALL_DIR=/root/install
 docker build . -t oracle-db:11.2.0.4-not-installed
 
 # run installer
-docker run -it --privileged --name oracle11g-installer -p 1521:1521 -p 1522:22 -v $INSTALL_DIR:/install oracle-db:11.2.0.4-not-installed
+docker run -it --name oracle11g-installer -p 1521:1521 -p 1522:22 -v $INSTALL_DIR:/install oracle-db:11.2.0.4-not-installed
 
 #commit this container
 docker commit oracle11g-installer oracle-db:11.2.0.4
