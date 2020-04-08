@@ -13,9 +13,9 @@ deps () {
 		elfutils-libelf-devel elfutils-libelf-devel-static ksh \
 		libaio libaio-devel numactl-devel sysstat unixODBC unixODBC-devel \
 		pcre-devel glibc.i686 unzip sudo passwd openssh-server psmisc
-	curl --progress-bar --output /assets/tini \
+	curl -L --progress-bar --output /assets/tini \
 		"https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-amd64"
-	curl --progress-bar --output /assets/gosu \
+	curl -L --progress-bar --output /assets/gosu \
 		"https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
 	chmod 755 /assets/tini /assets/gosu
 	yum clean all
