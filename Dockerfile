@@ -13,6 +13,7 @@ ENV TZ="Asia/Shanghai" \
     SELECTED_LANGUAGES="en,zh_CN" \
     ORACLE_EDITION="EE" \
     DB_SID="orcl" \
+    DB_GDBNAME="orcl" \
     DB_SYSPASSWORD="123456" \
     DB_SYSTEMPASSWORD="123456" \
     DB_CHARACTERSET="AL32UTF8" \

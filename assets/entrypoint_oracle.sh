@@ -10,7 +10,7 @@ set -e
 source /assets/colorecho
 source ~/.bashrc
 
-alert_log="$ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace/alert_$ORACLE_SID.log"
+alert_log="$ORACLE_BASE/diag/rdbms/${DB_GDBNAME:-orcl}/$ORACLE_SID/trace/alert_$ORACLE_SID.log"
 listener_log="$ORACLE_BASE/diag/tnslsnr/$HOSTNAME/listener/trace/listener.log"
 pfile=$ORACLE_HOME/dbs/init$ORACLE_SID.ora
 monitor_pid=""
@@ -56,6 +56,10 @@ create_db_apply_env() {
 		sed -i "/SYSPASSWORD = /c\\SYSPASSWORD = \"${DB_SYSPASSWORD}\"\\" /assets/dbca.rsp
 	fi
 
+	if [ ! -z "${DB_GDBNAME}" ]; then
+		sed -i "/GDBNAME = /c\\GDBNAME = \"${DB_GDBNAME}\"\\" /assets/dbca.rsp
+	fi
+
 	if [ ! -z "${DB_SYSTEMPASSWORD}" ]; then
 		sed -i "/SYSTEMPASSWORD = /c\\SYSTEMPASSWORD = \"${DB_SYSTEMPASSWORD}\"\\" /assets/dbca.rsp
 	fi
@@ -84,8 +88,8 @@ create_db() {
 	MON_LSNR_PID=$monitor_pid
 	echo_green "START DBCA"
 	dbca -silent -createDatabase -responseFile /assets/dbca.rsp ||
-		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
-		cat $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID.log
+		cat $ORACLE_HOME/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+		cat $ORACLE_HOME/cfgtoollogs/dbca/$ORACLE_SID.log
 	echo_green "Database created."
 	date "+%F %T"
 	change_dpdump_dir
@@ -98,14 +102,14 @@ create_db() {
 
 stop() {
 	trap '' SIGINT SIGTERM
-	shu_immediate
+	stop_db
 	echo_yellow "Shutting down listener..."
 	lsnrctl stop | while read line; do echo -e "lsnrctl: $line"; done
 	kill $MON_ALERT_PID $MON_LSNR_PID
 	exit 0
 }
 
-shu_immediate() {
+stop_db() {
 	ps -ef | grep ora_pmon | grep -v grep > /dev/null && \
 	echo_yellow "Shutting down the database..." && \
 	sqlplus / as sysdba <<-EOF |
@@ -140,18 +144,18 @@ set_db_config () {
 
 link_db_files () {
 	echo_green "Creating link of the database files."
-	if [ ! -L $ORACLE_BASE/product/11.2.0/dbhome_1/dbs ]; then
-		if [ ! -d $ORACLE_BASE/product/11.2.0/dbhome_1 ]; then
-			mkdir -p $ORACLE_BASE/product/11.2.0/dbhome_1
+	if [ ! -L $ORACLE_HOME/dbs ]; then
+		if [ ! -d $ORACLE_HOME ]; then
+			mkdir -p $ORACLE_HOME
 		fi
 		if [ ! -d $ORACLE_BASE/oradata/dbs ]; then
 			mkdir -p $ORACLE_BASE/oradata/dbs
 		fi
-		if [ -d $ORACLE_BASE/product/11.2.0/dbhome_1/dbs ]; then
-			mv -f $ORACLE_BASE/product/11.2.0/dbhome_1/dbs/* $ORACLE_BASE/oradata/dbs
-			rmdir $ORACLE_BASE/product/11.2.0/dbhome_1/dbs
+		if [ -d $ORACLE_HOME/dbs ]; then
+			mv -f $ORACLE_HOME/dbs/* $ORACLE_BASE/oradata/dbs
+			rmdir $ORACLE_HOME/dbs
 		fi
-		ln -fsT $ORACLE_BASE/oradata/dbs $ORACLE_BASE/product/11.2.0/dbhome_1/dbs
+		ln -fsT $ORACLE_BASE/oradata/dbs $ORACLE_HOME/dbs
 	fi
 
 	if [ ! -L $ORACLE_BASE/admin/$ORACLE_SID/pfile ]; then
@@ -168,8 +172,8 @@ link_db_files () {
 		ln -fsT $ORACLE_BASE/oradata/pfile $ORACLE_BASE/admin/$ORACLE_SID/pfile
 	fi
 
-	if [ ! -d $ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace ]; then
-		mkdir -p $ORACLE_BASE/diag/rdbms/$ORACLE_SID/$ORACLE_SID/trace
+	if [ ! -d $ORACLE_BASE/diag/rdbms/${DB_GDBNAME:-orcl}/$ORACLE_SID/trace ]; then
+		mkdir -p $ORACLE_BASE/diag/rdbms/${DB_GDBNAME:-orcl}/$ORACLE_SID/trace
 	fi
 	if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
 		mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
