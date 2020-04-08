@@ -21,8 +21,8 @@ rm -rf /tmp/*.rsp
 rm -rf /tmp/InstallActions*
 rm -rf /tmp/CVU*oracle
 
-find ${ORACLE_INVENTORY} -type f -name -delete *.log
-find ${ORACLE_BASE}/product -type f -name -delete *.log
+find ${ORACLE_INVENTORY} -type f -name '*.log' -delete
+find ${ORACLE_BASE}/product -type f -name '*.log' -delete
 
 rm -rf ${ORACLE_HOME}/inventory # remove inventory
 # keep oui, or there would be NoClassDefFoundError: oracle/sysman/oii/oiil/OiilNativeException
@@ -30,3 +30,4 @@ rm -rf ${ORACLE_HOME}/inventory # remove inventory
 rm -rf ${ORACLE_HOME}/OPatch # remove OPatch
 rm -rf /tmp/OraInstall*
 rm -rf ${ORACLE_HOME}/.patch_storage # remove patch storage
+rm -rf ${ORACLE_HOME}/oc4j/.patch_storage # remove patch storage
