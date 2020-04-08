@@ -44,7 +44,7 @@ start_db() {
 	EOF
 	while read line; do echo -e "sqlplus: $line"; done
 	# user script
-	/assets/run_user_scripts.sh /opt/oracle/user_scripts/6-after-db-startup
+	/assets/run_user_scripts.sh /opt/oracle/user_scripts/7-after-db-startup
 	# end user script
 	echo_green "Database started."
 	wait $MON_ALERT_PID
@@ -205,7 +205,7 @@ if [ ! -f $pfile ]; then
 fi
 chmod 777 $ORACLE_BASE/oradata/dpdump
 # user script
-/assets/run_user_scripts.sh /opt/oracle/user_scripts/5-before-db-startup
+/assets/run_user_scripts.sh /opt/oracle/user_scripts/6-before-db-startup
 # end user script
 start_db
 

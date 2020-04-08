@@ -158,12 +158,16 @@ A user script should be executed at:
     * path: `/opt/oracle/user_scripts/4-after-db-create`
     * target: shell script and sql script
     * user: `oracle` for shell script and `sys` for sql script
+* once container starts up before database startup
+    * path: `/opt/oracle/user_scripts/5-once-container-startup`
+    * target: shell script
+    * user: `root`
 * every time container starts up before database startup
-    * path: `/opt/oracle/user_scripts/5-before-db-startup`
+    * path: `/opt/oracle/user_scripts/6-before-db-startup`
     * target: shell script and sql script
     * user: `oracle` for shell script and `sys` for sql script
 * every time container starts up after database startup as `oracle`
-    * path: `/opt/oracle/user_scripts/6-after-db-startup`
+    * path: `/opt/oracle/user_scripts/7-after-db-startup`
     * target: shell script and sql script
     * user: `oracle` for shell script and `sys` for sql script
 

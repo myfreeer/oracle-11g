@@ -59,8 +59,9 @@ mk_user_script_dir () {
 		/opt/oracle/user_scripts/2-after-db-install \
 		/opt/oracle/user_scripts/3-before-db-create \
 		/opt/oracle/user_scripts/4-after-db-create \
-		/opt/oracle/user_scripts/5-before-db-startup \
-		/opt/oracle/user_scripts/6-after-db-startup
+		/opt/oracle/user_scripts/5-once-container-startup \
+		/opt/oracle/user_scripts/6-before-db-startup \
+		/opt/oracle/user_scripts/7-after-db-startup
 
 	chown -R oracle:oinstall /opt/oracle/user_scripts
 

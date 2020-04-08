@@ -40,5 +40,9 @@ if [ -d /opt/oracle/user_scripts ]; then
 	chown -R oracle:oinstall /opt/oracle/user_scripts
 fi
 
+# user script
+/assets/run_user_scripts.sh /opt/oracle/user_scripts/5-once-container-startup ONCE SHELL_ONLY
+# end user script
+
 # entrypoint_oracle would handle singals
 exec /assets/gosu oracle "/assets/entrypoint_oracle.sh"
