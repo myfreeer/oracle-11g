@@ -28,8 +28,9 @@ popd
 ```
 
 ### (Optional) Prepare db patch files
-Warning: currently running dbca with patch `29497421` and `29610422` in container
-is extremely slow with amounts of warnings and errors.
+Warning: currently running dbca with ojvm patch in container
+is extremely slow with amounts of warnings and errors
+and would probably stuck at 73%.
 Use it on your own risk or just skip that.
 
 ```sh

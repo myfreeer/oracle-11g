@@ -12,6 +12,8 @@ RUN chmod -R 755 /assets && /assets/setup.sh
 ENV TZ="Asia/Shanghai" \
     SELECTED_LANGUAGES="en,zh_CN" \
     ORACLE_EDITION="EE" \
+    # 1 to start sshd, 0 not to start it at startup
+    START_SSH="1" \
     DB_SID="orcl" \
     DB_GDBNAME="orcl" \
     DB_SYSPASSWORD="123456" \

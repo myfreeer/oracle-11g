@@ -2,11 +2,16 @@
 
 set -e
 source /assets/colorecho
-nohup /usr/sbin/sshd -D  2> /dev/null &
+
+# ssh
+if [ "${START_SSH:-1}" = "1" ];then
+	nohup /usr/sbin/sshd -D  2> /dev/null &
+fi
 
 export TZ=${TZ:-'Asia/Shanghai'}
 
 ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime
+
 if [ ! -d "/opt/oracle/app/product/11.2.0/dbhome_1" ]; then
 	echo_yellow "Database is not installed. Installing..."
 	# user script
