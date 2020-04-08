@@ -108,6 +108,31 @@ docker start oracle11g
 docker update --restart=unless-stopped oracle11g
 ```
 
+## Build args
+* `TINI_VERSION`: version of [tini](https://github.com/krallin/tini)
+* `GOSU_VERSION`: version of [gosu](https://github.com/tianon/gosu)
+* `SYS_ROOT_PWD`: password of `root` user
+* `SYS_ORACLE_PWD`: password of `oracle` user
+
+## Configurable environment vars
+### Database installation vars
+* `SELECTED_LANGUAGES`: Specify the languages in which the components will be installed. 
+* `ORACLE_EDITION`: Specify the installation edition of the component.
+
+### Database creation vars
+* `TZ`: Time zone of container
+* `DB_SID`: System identifier (SID) of the database
+* `DB_GDBNAME`: Global database name of the database
+* `DB_SYSPASSWORD`: Password for SYS user
+* `DB_SYSTEMPASSWORD`: Password for SYSTEM user
+* `DB_CHARACTERSET`: Character set of the database
+* `DB_TOTALMEMORY`: total memory in MB to allocate to Oracle
+* `DB_INITPARAMS`: comma separated list of name=value pairs. Overrides initialization parameters defined in templates
+
+### Runtime vars
+* `START_SSH`: 1 to start sshd, 0 not to start it at startup
+
+
 ## Other info
 Database located in **/opt/oracle** folder
 
@@ -123,7 +148,7 @@ Database located in **/opt/oracle** folder
 
 Optionally you can map dpdump folder to easy upload dumps:
 ```sh
-docker run -it --privileged --name oracle11g -p 1521:1521 -p 1522:22 -v <local_dpdump>:/opt/oracle/app/oradata/dpdump oracle-db:11.2.0.4
+docker run -it --name oracle11g -p 1521:1521 -p 1522:22 -v <local_dpdump>:/opt/oracle/app/oradata/dpdump oracle-db:11.2.0.4
 ```
 To execute impdp/expdp just use docker exec command:
 ```sh
