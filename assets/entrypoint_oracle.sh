@@ -88,8 +88,8 @@ create_db() {
 	MON_LSNR_PID=$monitor_pid
 	echo_green "START DBCA"
 	dbca -silent -createDatabase -responseFile /assets/dbca.rsp ||
-		cat $ORACLE_HOME/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
-		cat $ORACLE_HOME/cfgtoollogs/dbca/$ORACLE_SID.log
+		cat $ORACLE_HOME/cfgtoollogs/dbca/${DB_GDBNAME}/${DB_GDBNAME}.log ||
+		cat $ORACLE_HOME/cfgtoollogs/dbca/${DB_GDBNAME}.log
 	echo_green "Database created."
 	date "+%F %T"
 	change_dpdump_dir
@@ -158,22 +158,27 @@ link_db_files () {
 		ln -fsT $ORACLE_BASE/oradata/dbs $ORACLE_HOME/dbs
 	fi
 
-	if [ ! -L $ORACLE_BASE/admin/$ORACLE_SID/pfile ]; then
-		if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID ]; then
-			mkdir -p $ORACLE_BASE/admin/$ORACLE_SID
+	if [ ! -L $ORACLE_BASE/admin ]; then
+		if [ ! -d $ORACLE_BASE/admin ]; then
+			mkdir -p $ORACLE_BASE/admin
 		fi
-		if [ ! -d $ORACLE_BASE/oradata/pfile ]; then
-			mkdir -p $ORACLE_BASE/oradata/pfile
+		if [ ! -d $ORACLE_BASE/oradata/admin ]; then
+			mkdir -p $ORACLE_BASE/oradata/admin
 		fi
-		if [ -d $ORACLE_BASE/admin/$ORACLE_SID/pfile ]; then
-			mv -f $ORACLE_BASE/admin/$ORACLE_SID/pfile/* $ORACLE_BASE/oradata/pfile/
-			rmdir $ORACLE_BASE/admin/$ORACLE_SID/pfile
+		if [ -d $ORACLE_BASE/admin ]; then
+			if [ -n "$(ls -A "${ORACLE_BASE}/admin")" ]; then
+				mv -f $ORACLE_BASE/admin/* $ORACLE_BASE/oradata/admin/
+			fi
+			rmdir $ORACLE_BASE/admin
 		fi
-		ln -fsT $ORACLE_BASE/oradata/pfile $ORACLE_BASE/admin/$ORACLE_SID/pfile
+		ln -fsT $ORACLE_BASE/oradata/admin $ORACLE_BASE/admin
 	fi
 
 	if [ ! -d $ORACLE_BASE/diag/rdbms/${DB_GDBNAME:-orcl}/$ORACLE_SID/trace ]; then
 		mkdir -p $ORACLE_BASE/diag/rdbms/${DB_GDBNAME:-orcl}/$ORACLE_SID/trace
+	fi
+	if [ ! -d $ORACLE_BASE/admin/${DB_GDBNAME:-orcl}/adump ]; then
+		mkdir -p $ORACLE_BASE/admin/${DB_GDBNAME:-orcl}/adump
 	fi
 	if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
 		mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
