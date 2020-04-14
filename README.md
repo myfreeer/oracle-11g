@@ -76,6 +76,27 @@ docker commit oracle11g-installer oracle-db:11.2.0.4
 docker rm oracle11g-installer
 ```
 
+## Build the image with buildkit (experimental)
+With [buildkit](https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/experimental.md),
+the mount and commit command is no longer needed, one can build the image with oracle db installed,
+without copying the installer into image or hosted on lan. 
+```bash
+# move db installation files to current dir
+mkdir -p install
+chmod 440:200 install
+mv $INSTALL_DIR/* install/
+
+# pull images
+docker pull centos:7
+docker pull docker/dockerfile:experimental
+
+# build it
+DOCKER_BUILDKIT=1 docker build . -t oracle-db:11.2.0.4
+
+# cleanup
+DOCKER_BUILDKIT=1 docker builder prune -f
+```
+
 ## Configure and run database
 ### Configure and run database in container
 
