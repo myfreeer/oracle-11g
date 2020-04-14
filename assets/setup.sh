@@ -43,6 +43,9 @@ users () {
 	ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key  -N ''
 	sed -i "s/#UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config
 	sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config
+	# disable dns lookup for faster connection
+	sed -i '/GSSAPIAuthentication/c\GSSAPIAuthentication no\' /etc/ssh/sshd_config
+	sed -i '/UseDNS/c\UseDNS no\' /etc/ssh/sshd_config
 }
 
 sysctl_and_limits () {

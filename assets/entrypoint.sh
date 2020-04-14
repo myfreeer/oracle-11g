@@ -5,7 +5,7 @@ source /assets/colorecho
 
 # ssh
 if [ "${START_SSH:-1}" = "1" ];then
-	nohup /usr/sbin/sshd -D  2> /dev/null &
+	nohup /usr/sbin/sshd -u0 -D  2> /dev/null &
 fi
 
 export TZ=${TZ:-'Asia/Shanghai'}
