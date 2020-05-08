@@ -135,12 +135,14 @@ docker update --restart=unless-stopped oracle11g
 * `SYS_ROOT_PWD`: password of `root` user
 * `SYS_ORACLE_PWD`: password of `oracle` user
 
-## Configurable environment vars
-### Database installation vars
+## Configurable environment variables
+### Database installation variables
+Note: these variables would be build args in buildkit ver.
+
 * `SELECTED_LANGUAGES`: Specify the languages in which the components will be installed. 
 * `ORACLE_EDITION`: Specify the installation edition of the component.
 
-### Database creation vars
+### Database creation variables
 * `TZ`: Time zone of container
 * `DB_SID`: System identifier (SID) of the database
 * `DB_GDBNAME`: Global database name of the database
@@ -150,7 +152,7 @@ docker update --restart=unless-stopped oracle11g
 * `DB_TOTALMEMORY`: total memory in MB to allocate to Oracle
 * `DB_INITPARAMS`: comma separated list of name=value pairs. Overrides initialization parameters defined in templates
 
-### Runtime vars
+### Runtime variables
 * `START_SSH`: 1 to start sshd, 0 not to start it at startup
 
 

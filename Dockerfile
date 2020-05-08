@@ -3,8 +3,8 @@ FROM centos:7
 ADD assets /assets
 
 # build-time args
-ARG TINI_VERSION=v0.18.0
-ARG GOSU_VERSION=1.11
+ARG TINI_VERSION=v0.19.0
+ARG GOSU_VERSION=1.12
 ARG SYS_ROOT_PWD=123456
 ARG SYS_ORACLE_PWD=123456
 RUN chmod -R 755 /assets && /assets/setup.sh
